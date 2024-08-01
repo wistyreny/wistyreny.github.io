@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Visitor Counter</title>
+</head>
+<body>
+    <h1>Real-Time Visitor Counter</h1>
+    <p>Number of visitors: <span id="visitor-count">0</span></p>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+    <!-- Your custom JavaScript -->
+    <script>
+        // Your Firebase configuration (replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(app);
+
+        // Reference to the visitor count in the database
+        const visitorCountRef = db.ref('visitorCount');
+
+        // Increment visitor count
+        visitorCountRef.transaction(currentCount => {
+            return (currentCount || 0) + 1;
+        });
+
+        // Listen for changes to visitor count
+        visitorCountRef.on('value', (snapshot) => {
+            const visitorCount = snapshot.val();
+            document.getElementById('visitor-count').textContent = visitorCount;
+        });
+    </script>
+</body>
+</html>
