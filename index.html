@@ -3,46 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Visitor Counter</title>
+    <title>Real-Time User Count</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #userCount {
+            font-size: 2em;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Real-Time Visitor Counter</h1>
-    <p>Number of visitors: <span id="visitor-count">0</span></p>
-
-    <!-- Firebase App (the core Firebase SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
-    <!-- Firebase Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
-    <!-- Your custom JavaScript -->
+    <h1>Real-Time User Count</h1>
+    <div id="userCount">Loading...</div>
     <script>
-        // Your Firebase configuration (replace with your actual config)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCzvy5cC80-gZfppPX_R_y5eTKd9yvX3vg",
-            authDomain: "p-engine-visitor.firebaseapp.com",
-            databaseURL: "https://p-engine-visitor-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "p-engine-visitor",
-            storageBucket: "p-engine-visitor.appspot.com",
-            messagingSenderId: "562218289947",
-            appId: "1:562218289947:web:7d3650cab529cc2d03e1be"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(app);
-
-        // Reference to the visitor count in the database
-        const visitorCountRef = db.ref('visitorCount');
-
-        // Increment visitor count
-        visitorCountRef.transaction(currentCount => {
-            return (currentCount || 0) + 1;
-        });
-
-        // Listen for changes to visitor count
-        visitorCountRef.on('value', (snapshot) => {
-            const visitorCount = snapshot.val();
-            document.getElementById('visitor-count').textContent = visitorCount;
-        });
+        async function fetchUserCount() {
+            const response = await fetch('https://p-engine-visitor-default-rtdb.asia-southeast1.firebasedatabase.app/userCount.json');
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('userCount').innerText = data.count;
+            } else {
+                document.getElementById('userCount').innerText = 'Error fetching data';
+            }
+        }
+        fetchUserCount();
     </script>
 </body>
 </html>
