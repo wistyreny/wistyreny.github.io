@@ -21,11 +21,15 @@
     <div id="userCount">Loading...</div>
     <script>
         async function fetchUserCount() {
-            const response = await fetch('https://p-engine-visitor-default-rtdb.asia-southeast1.firebasedatabase.app/userCount.json');
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById('userCount').innerText = data.count;
-            } else {
+            try {
+                const response = await fetch('https://p-engine-visitor-default-rtdb.asia-southeast1.firebasedatabase.app/userCount.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userCount').innerText = data.count;
+                } else {
+                    document.getElementById('userCount').innerText = 'Error fetching data';
+                }
+            } catch (error) {
                 document.getElementById('userCount').innerText = 'Error fetching data';
             }
         }
