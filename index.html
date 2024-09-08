@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>นับจำนวนผู้เข้าชมแบบ Realtime</title>
+    <title>นับจำนวนผู้เข้าชมแบบ Realtime ด้วย Firebase</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,17 +28,47 @@
         จำนวนผู้เข้าชมขณะนี้: <span id="visitorCount">0</span>
     </div>
 
-    <script>
-        function updateVisitorCount() {
-            // จำลองการดึงข้อมูลจากเซิร์ฟเวอร์
-            const randomIncrease = Math.floor(Math.random() * 3);
-            const currentCount = parseInt(document.getElementById('visitorCount').textContent);
-            const newCount = currentCount + randomIncrease;
-            document.getElementById('visitorCount').textContent = newCount;
-        }
+    <!-- เพิ่ม Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
 
-        // อัพเดตทุก 5 วินาที
-        setInterval(updateVisitorCount, 5000);
+    <script>
+        // ตั้งค่า Firebase config ของคุณที่นี่
+        const firebaseConfig = {
+            // ใส่ค่า config ของคุณที่นี่
+            apiKey: "AIzaSyCzvy5cC80-gZfppPX_R_y5eTKd9yvX3vg",
+            authDomain: "p-engine-visitor.firebaseapp.com",
+            databaseURL: "https://p-engine-visitor-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "p-engine-visitor",
+            storageBucket: "p-engine-visitor.appspot.com",
+            messagingSenderId: "562218289947",
+            appId: "1:562218289947:web:7d3650cab529cc2d03e1be"
+        };
+
+        // เริ่มต้นใช้งาน Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // อ้างอิงไปยัง Realtime Database
+        const database = firebase.database();
+        const visitorCountRef = database.ref('visitorCount');
+
+        // เพิ่มจำนวนผู้เข้าชมเมื่อโหลดหน้าเว็บ
+        visitorCountRef.transaction((currentCount) => {
+            return (currentCount || 0) + 1;
+        });
+
+        // อัพเดตจำนวนผู้เข้าชมแบบ realtime
+        visitorCountRef.on('value', (snapshot) => {
+            const count = snapshot.val() || 0;
+            document.getElementById('visitorCount').textContent = count;
+        });
+
+        // ลดจำนวนผู้เข้าชมเมื่อปิดหน้าเว็บ
+        window.addEventListener('beforeunload', () => {
+            visitorCountRef.transaction((currentCount) => {
+                return currentCount > 0 ? currentCount - 1 : 0;
+            });
+        });
     </script>
 </body>
 </html>
